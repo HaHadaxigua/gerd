@@ -1,4 +1,0 @@
-var searchIndex = JSON.parse('{\
-"hello":{"doc":"","t":[3,11,11,11,11,5,11,5,11,11,11,11],"n":["ThreadPool","borrow","borrow_mut","execute","from","handle_connection","into","main","new","try_from","try_into","type_id"],"q":["hello","","","","","","","","","","",""],"d":["","","","","Returns the argument unchanged.","","Calls <code>U::from(self)</code>.","","Create a new thread pool;","","",""],"i":[0,1,1,1,1,0,1,0,1,1,1,1],"f":[null,[[["",0]],["",0]],[[["",0]],["",0]],[[["",0]]],[[]],[[["tcpstream",3]]],[[]],[[]],[[["usize",0]],["threadpool",3]],[[],["result",4]],[[],["result",4]],[[["",0]],["typeid",3]]],"p":[[3,"ThreadPool"]]}\
-}');
-if (window.initSearch) {window.initSearch(searchIndex)};
