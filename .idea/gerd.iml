@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/my_macro/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/hello_wasm/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/hello_nom/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/my_macro/target" />
       <excludeFolder url="file://$MODULE_DIR$/hello_macro/target" />
@@ -17,6 +18,7 @@
       <excludeFolder url="file://$MODULE_DIR$/hello_attr_macro/target" />
       <excludeFolder url="file://$MODULE_DIR$/hello/target" />
       <excludeFolder url="file://$MODULE_DIR$/hello_wasm/target" />
+      <excludeFolder url="file://$MODULE_DIR$/hello_nom/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
