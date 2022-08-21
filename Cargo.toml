@@ -21,3 +21,4 @@ docker-compose-types = "0.2.0"
 serde = "1.0"
 serde_yaml = "0.9"
 quote = "1.0.21"
+clap = { version = "3.2.17", features = ["derive"] }
