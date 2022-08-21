@@ -109,11 +109,19 @@ impl Scanner {
                 if !x {
                     return self.add_token(TokenType::Slash, None);
                 }
-
+                // this is a comment, just consume without add_token
                 while self.peek()? != '\n' && !self.is_at_end() {
                     self.advance()?;
                 }
                 return Ok(());
+            }
+            /// meaningless characters
+            ' ' | '\r' | '\t' => {
+                Ok(())
+            } // skip some meaningless characters
+            '\n' => {
+                self.line += self.line;
+                Ok(())
             }
             _ => {
                 Err(UnexpectedCharacter)
