@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use docker_compose_types;
+#[allow(unused_imports)]
 use serde_yaml;
 use serde::{Serialize, Deserialize};
 
@@ -67,7 +68,5 @@ services:
     }
 
     #[test]
-    fn test_quote() {
-
-    }
+    fn test_quote() {}
 }
