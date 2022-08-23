@@ -2,6 +2,35 @@ use crate::token::{Token, TokenType};
 use crate::err::RoxyErr::{self, CrossBorder, LoadSubString, UnexpectedCharacter};
 use crate::token;
 use std::str;
+use lazy_static::lazy_static;
+use std::sync::Mutex;
+use std::collections::HashMap;
+use crate::token::TokenType::Identifier;
+
+lazy_static! {
+    static ref KEY_WORDS: HashMap<&'static str, TokenType> =
+        HashMap::from(
+    [
+        ("and", TokenType::And),
+        ("class", TokenType::Class),
+        ("else", TokenType::Else),
+        ("false", TokenType::False),
+        ("for", TokenType::For),
+        ("fun", TokenType::Fun),
+        ("if", TokenType::If),
+        ("nil", TokenType::Nil),
+        ("or", TokenType::Or),
+        ("print", TokenType::Print),
+        ("return", TokenType::Return),
+        ("super", TokenType::Super),
+        ("this", TokenType::This),
+        ("true", TokenType::True),
+        ("var", TokenType::Var),
+        ("while", TokenType::While),
+    ]
+);
+}
+
 
 
 #[derive(Debug)]
@@ -115,7 +144,7 @@ impl Scanner {
                 }
                 return Ok(());
             }
-            /// meaningless characters
+            // meaningless characters
             ' ' | '\r' | '\t' => {
                 Ok(())
             } // skip some meaningless characters
@@ -123,8 +152,19 @@ impl Scanner {
                 self.line += self.line;
                 Ok(())
             }
+            // handle string literal
+            '"' => {
+                self.handle_string_literal()
+            }
             _ => {
-                Err(UnexpectedCharacter)
+                if is_digit(c) {
+                    return self.handle_number();
+                }
+                if is_alpha(c) {
+                    return self.handle_identify();
+                }
+
+                return Err(UnexpectedCharacter);
             }
         }
     }
@@ -151,6 +191,21 @@ impl Scanner {
             Ok(e)
         } else {
             Err(CrossBorder)
+        }
+    }
+
+    fn peek_next(&mut self) -> Result<char, RoxyErr> {
+        if self.current + 1 >= self.source.len() {
+            return Ok('\0');
+        }
+        match self.source.chars().nth(self.current) {
+            Some(e) => {
+                self.current += 1;
+                Ok(e)
+            }
+            None => {
+                Err(CrossBorder)
+            }
         }
     }
 
@@ -189,10 +244,93 @@ impl Scanner {
         return Ok(true);
     }
 
+    fn handle_string_literal(&mut self) -> Result<(), RoxyErr> {
+        while self.peek()? != '"' && self.is_at_end() {
+            if self.peek()? == '\n' {
+                self.line += 1;
+            }
+            self.advance()?;
+        }
+
+        if self.is_at_end() {
+            return Err(RoxyErr::UnterminatedString);
+        }
+
+        self.advance()?;
+
+        let text = match str::from_utf8(&self.source.as_bytes()[self.start + 1..self.current - 1]) {
+            Ok(e) => { String::from(e.clone()) }
+            Err(e) => {
+                return Err(RoxyErr::Utf8Error(e));
+            }
+        };
+
+        self.add_token(TokenType::String, Some(Box::new(text)))
+    }
+
+
+    fn handle_number(&mut self) -> Result<(), RoxyErr> {
+        while is_digit(self.peek()?) {
+            self.advance()?;
+        }
+
+        if self.peek()? == '.' && is_digit(self.peek_next()?) {
+            self.advance()?;
+            while is_digit(self.peek()?) {
+                self.advance()?;
+            }
+        }
+
+        let text = match str::from_utf8(&self.source.as_bytes()[self.start..self.current]) {
+            Ok(e) => { String::from(e.clone()) }
+            Err(e) => {
+                return Err(RoxyErr::Utf8Error(e));
+            }
+        };
+
+        let float = match text.parse::<f64>() {
+            Ok(e) => {
+                e
+            }
+            Err(e) => {
+                return Err(RoxyErr::ParseFloatError(e));
+            }
+        };
+
+        self.add_token(TokenType::Number, Some(Box::new(float)))
+    }
+
+    fn handle_identify(&mut self) -> Result<(), RoxyErr> {
+        while is_alpha_number(self.peek()?) {
+            self.advance()?;
+        }
+
+        let text = match str::from_utf8(&self.source.as_bytes()[self.start..self.current]) {
+            Ok(e) => { e.clone() }
+            Err(e) => {
+                return Err(RoxyErr::Utf8Error(e));
+            }
+        };
+        let tt = KEY_WORDS.get(text).unwrap_or_default();
+
+        self.add_token(tt.into(), None)
+    }
 
     fn is_at_end(&self) -> bool {
         return self.current >= self.source.len();
     }
+}
+
+fn is_digit(c: char) -> bool {
+    c >= '0' && c <= '9'
+}
+
+fn is_alpha(c: char) -> bool {
+    c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_'
+}
+
+fn is_alpha_number(c: char) -> bool {
+    is_alpha(c) || is_alpha_number(c)
 }
 
 #[cfg(test)]

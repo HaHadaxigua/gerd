@@ -6,4 +6,6 @@ pub enum RoxyErr {
     LoadSubString,
 
     Utf8Error(std::str::Utf8Error),
+    UnterminatedString,
+    ParseFloatError(std::num::ParseFloatError),
 }
