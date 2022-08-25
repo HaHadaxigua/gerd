@@ -1,7 +1,8 @@
-use std::{fs,
-          path::PathBuf,
-          io::{self, BufRead, BufReader},
-          process::exit,
+use std::{
+    fs,
+    io::{self, BufRead, BufReader},
+    path::PathBuf,
+    process::exit,
 };
 
 pub struct Roxy {
@@ -10,9 +11,7 @@ pub struct Roxy {
 
 impl Roxy {
     pub fn new() -> Self {
-        Roxy {
-            had_error: false,
-        }
+        Roxy { had_error: false }
     }
     pub fn run_file(&mut self, path: &PathBuf) {
         if !path.exists() {
@@ -45,9 +44,6 @@ impl Roxy {
     }
 }
 
-
 fn report(line_cnt: usize, location: &str, message: &str) {
     eprintln!("[line {} ] Error {}: {} ", line_cnt, location, message)
 }
-
-

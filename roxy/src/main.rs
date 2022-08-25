@@ -1,11 +1,9 @@
-mod token;
-mod scanner;
-mod roxy;
 mod err;
+mod roxy;
+mod scanner;
 
-use std::path::PathBuf;
 use clap::Parser;
-
+use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -28,4 +26,3 @@ fn main() {
         }
     }
 }
-
