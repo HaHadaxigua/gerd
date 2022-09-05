@@ -1,9 +1,9 @@
 use std::collections::BTreeMap;
 
 use docker_compose_types;
+use serde::{Deserialize, Serialize};
 #[allow(unused_imports)]
 use serde_yaml;
-use serde::{Serialize, Deserialize};
 
 type ServiceName = String;
 
@@ -13,11 +13,10 @@ pub struct Module {
     services: Option<BTreeMap<ServiceName, docker_compose_types::Service>>,
 }
 
-
 #[cfg(test)]
 mod tests {
-    use quote::quote;
     use super::*;
+    use quote::quote;
 
     #[test]
     fn parse_service_yaml() {
