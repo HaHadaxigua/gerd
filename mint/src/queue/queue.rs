@@ -30,14 +30,6 @@ struct Queue {
 
 impl Queue {
     pub fn open(name: String, data_dir: String, opts: Options) -> Result<Queue, Box<dyn std::error::Error>> {
-        let re = Regex::new(r#"[^a-zA-Z0-9_\-\:]+"#).expect("invalid regular expression");
-        if !re.is_match(name.as_ref()) {
-            return Err(Box::new(QueueError::InvalidQueueName(name.clone())));
-        }
-        if name.len() > 100 {
-            return Err(Box::new(QueueError::NameTooLong(name.clone())));
-        }
-
         Ok(Queue {
             name: name.clone(),
             data_dir: path::PathBuf::from(data_dir.as_str()),
@@ -51,11 +43,20 @@ impl Queue {
         })
     }
 
-    fn path(&mut self) -> &str {
-        format!("{}/{}", self.data_dir.clone().to_str().unwrap(), self.name.clone()).as_str()
+    fn _open(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let re = Regex::new(r#"[^a-zA-Z0-9_\-\:]+"#).expect("invalid regular expression");
+        if !re.is_match(name.as_ref()) {
+            return Err(Box::new(QueueError::InvalidQueueName(name.clone())));
+        }
+        if name.len() > 100 {
+            return Err(Box::new(QueueError::NameTooLong(name.clone())));
+        }
+        Ok(())
     }
 
-
+    fn path(&mut self) -> String {
+        String::from(format!("{}/{}", self.data_dir.clone().to_str().unwrap(), self.name.clone()).as_str())
+    }
 }
 
 #[derive(Debug)]

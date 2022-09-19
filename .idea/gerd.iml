@@ -14,6 +14,7 @@
       <sourceFolder url="file://$MODULE_DIR$/hello_interpreter/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/roxy/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/mint/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/orange/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/my_macro/target" />
       <excludeFolder url="file://$MODULE_DIR$/hello_macro/target" />
@@ -25,6 +26,7 @@
       <excludeFolder url="file://$MODULE_DIR$/hello_interpreter/target" />
       <excludeFolder url="file://$MODULE_DIR$/roxy/target" />
       <excludeFolder url="file://$MODULE_DIR$/mint/target" />
+      <excludeFolder url="file://$MODULE_DIR$/orange/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
