@@ -1,4 +1,5 @@
 use std::collections::{HashMap, BTreeMap};
+use std::ops::Index;
 use std::sync::{Arc, Mutex};
 
 use tokio::time::{self, Duration, Instant};
@@ -78,12 +79,22 @@ struct Entry {
 }
 
 impl DbDropGuard {
+    /// Create a new `DbHolder`, wrapping a `Db` instance. When this is dropped
+    /// the `Db`'s purge task will be shut down.
     pub(crate) fn new() -> DbDropGuard {
         DbDropGuard { db: DB::new() }
     }
 
+    /// Get the shared database. Internally, this is an
+    /// `Arc`, so a clone only increments the ref count.
     pub(crate) fn db(&self) -> DB {
         self.db.clone()
+    }
+}
+
+impl Drop for DbDropGuard {
+    fn drop(&mut self) {
+        self.db.shutdown_purge_task();
     }
 }
 
@@ -102,5 +113,77 @@ impl DB {
         });
 
         DB { shared }
+    }
+
+    /// Get the value associated with a key.
+    ///
+    /// Returns `None` if there is no value associated with the key. This may be
+    /// due to never having assigned a value to the key or a previously assigned
+    /// value expired.
+    pub(crate) fn get(&self, key: &str) -> Option<Bytes> {
+        let state = self.shared.state.lock().unwrap();
+        state.entries.get(key).map(|entry| entry.data.clone())
+    }
+
+    /// Set the value associated with a key along with an optional expiration
+    /// Duration.
+    ///
+    /// If a value is already associated with the key, it is removed.
+    pub(crate) fn set(&self, key: String, value: Bytes, expire: Option<Duration>) {
+        let mut state = self.shared.state.lock().unwrap();
+
+        let id = state.next_id;
+        state.next_id += 1;
+
+        let mut notify = false;
+        let expires_at = expire.map(|duration| {
+            let when = Instant::now() + duration;
+
+            notify = state
+                .next_expiration()
+                .map(|expiration| expiration > when)
+                .unwrap_or(true);
+
+            state.expirations.insert((when, id), key.clone());
+            when
+        });
+
+        let prev = state.entries.insert(
+            key,
+            Entry {
+                id,
+                data: value,
+                expires_at,
+            },
+        );
+
+        if let Some(prev) = prev {
+            if let Some(when) = prev.expires_at {
+                state.expirations.remove(&(when, prev.id));
+            }
+        }
+
+        drop(state);
+
+        if notify {
+            self.shared.background_task.notify_one();
+        }
+    }
+
+    fn shutdown_purge_task(&self) {
+        let mut state = self.shared.state.lock().unwrap();
+        state.shutdown = true;
+
+        drop(state);
+        self.shared.background_task.notify_one();
+    }
+}
+
+impl State {
+    fn next_expiration(&self) -> Option<Instant> {
+        self.expirations
+            .keys()
+            .next()
+            .map(|expiration| expiration.0)
     }
 }
