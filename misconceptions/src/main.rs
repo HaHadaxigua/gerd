@@ -1,3 +1,5 @@
+pub mod static_lifetime;
+
 fn main() {
 	println!("Hello, world!");
 }
