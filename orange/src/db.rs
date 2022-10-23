@@ -17,13 +17,23 @@ pub(crate) struct DbDropGuard {
 	db: DB,
 }
 
+/// A `Db` instance is a handle to shared state. Cloning `DB` is shallow and only
+/// incurs an atomic ref count increment.
+///
+/// When a `Db` value is created, a background task is spawned. This task is
+/// used to expire values after the requested duration has elapsed. The task
+/// runs until all instances of `Db` are dropped, at which point the task
+/// terminates.
 #[derive(Debug, Clone)]
 pub(crate) struct DB {
+	/// Handle to shared state.
+	/// The background task will also have an `Arc<Shared>`
 	shared: Arc<Shared>,
 }
 
 #[derive(Debug)]
 struct Shared {
+	/// The shared state is guarded by a mutex.
 	/// Handle to shared state.
 	state: Mutex<State>,
 

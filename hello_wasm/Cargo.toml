@@ -5,12 +5,23 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+
 [[bin]]
-name = "load_wasm_module"
+name = "wasmtime"
 test = false
 bench = false
 
+[[bin]]
+name = "wasmer"
+test = false
+bench = false
 
 [dependencies]
 wasmer = "2.3.0"
 anyhow = "1.0.62"
+indoc = "1.0"
+wasmer-compiler-llvm = "2.3.0"
+wasmtime = "2.0.0"
+wasmtime-wasi = "2.0.0"
+llvm-sys = "150"
+
