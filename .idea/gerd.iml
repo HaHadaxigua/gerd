@@ -8,10 +8,12 @@
       <sourceFolder url="file://$MODULE_DIR$/orange/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/orange/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/hello_wasm/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/milet/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/misconceptions/target" />
       <excludeFolder url="file://$MODULE_DIR$/orange/target" />
       <excludeFolder url="file://$MODULE_DIR$/hello_wasm/target" />
+      <excludeFolder url="file://$MODULE_DIR$/milet/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
